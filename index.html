@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Debt Calculation with LocalStorage and Receipt Upload</title>
-    <link rel="stylesheet" href="style.css"> 
+    <title>Debt Calculation with History</title>
     <style>
         table {
             width: 100%;
@@ -25,9 +24,9 @@
 </head>
 <body>
 
-    <h2>ตารางเก็บหนี้แปะสลิปด้วยนะจ๊ะจากโฟนสุดที่รัก</h2>
+    <h2>บันทึกหนี้</h2>
 
-    <table id="debtTable">
+    <table>
         <thead>
             <tr>
                 <th>เดือนวันปี</th>
@@ -36,7 +35,7 @@
                 <th>หนี้ที่เหลือ</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="currentBill">
             <tr>
                 <td><input type="date" id="debtDate" /></td>
                 <td><input type="number" id="totalDebt" placeholder="Total Debt" /></td>
@@ -54,12 +53,97 @@
     <img id="receiptPreview" src="" alt="Receipt Preview" />
 
     <br>
-    <button onclick="deleteReceipt()">Delete</button>
-    <br><br>
     <button onclick="saveData()">Save Bill</button>
-    <button onclick="generateLink()">Generate Bill Link</button>
+    <br><br>
 
-    <!-- เชื่อมต่อไฟล์ JavaScript -->
-    <script src="script.js"></script>
+    <h2>ประวัติการบันทึกหนี้</h2>
+    <table id="historyTable">
+        <thead>
+            <tr>
+                <th>เดือนวันปี</th>
+                <th>หนี้ทั้งหมด</th>
+                <th>จ่ายแล้ว</th>
+                <th>หนี้ที่เหลือ</th>
+                <th>สลิป</th>
+            </tr>
+        </thead>
+        <tbody id="historyBody">
+            <!-- บิลที่บันทึกจะปรากฏที่นี่ -->
+        </tbody>
+    </table>
+
+    <script>
+        // โหลดประวัติจาก LocalStorage
+        window.onload = function() {
+            const history = JSON.parse(localStorage.getItem("billHistory")) || [];
+            renderHistory(history);
+        };
+
+        // คำนวณหนี้ที่เหลือ
+        function calculateRemainingDebt() {
+            const totalDebt = parseFloat(document.getElementById('totalDebt').value) || 0;
+            const paidAmount = parseFloat(document.getElementById('paidAmount').value) || 0;
+            const remainingDebt = totalDebt - paidAmount;
+            document.getElementById('remainingDebt').value = remainingDebt.toFixed(2);
+        }
+
+        // แสดงสลิปที่อัปโหลด
+        function previewReceipt(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                document.getElementById('receiptPreview').src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        // บันทึกข้อมูลบิล
+        function saveData() {
+            const date = document.getElementById('debtDate').value;
+            const totalDebt = document.getElementById('totalDebt').value;
+            const paidAmount = document.getElementById('paidAmount').value;
+            const remainingDebt = document.getElementById('remainingDebt').value;
+            const receipt = document.getElementById('receiptPreview').src;
+
+            if (!date || !totalDebt || !paidAmount || !remainingDebt) {
+                alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+                return;
+            }
+
+            const newBill = { date, totalDebt, paidAmount, remainingDebt, receipt };
+
+            // เก็บใน LocalStorage
+            const history = JSON.parse(localStorage.getItem("billHistory")) || [];
+            history.push(newBill);
+            localStorage.setItem("billHistory", JSON.stringify(history));
+
+            // แสดงในตาราง
+            renderHistory(history);
+
+            // รีเซ็ตฟอร์ม
+            document.getElementById('debtDate').value = "";
+            document.getElementById('totalDebt').value = "";
+            document.getElementById('paidAmount').value = "";
+            document.getElementById('remainingDebt').value = "";
+            document.getElementById('receiptPreview').src = "";
+        }
+
+        // แสดงประวัติในตาราง
+        function renderHistory(history) {
+            const historyBody = document.getElementById('historyBody');
+            historyBody.innerHTML = ""; // ล้างข้อมูลเก่า
+
+            history.forEach(bill => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${bill.date}</td>
+                    <td>${bill.totalDebt}</td>
+                    <td>${bill.paidAmount}</td>
+                    <td>${bill.remainingDebt}</td>
+                    <td>${bill.receipt ? `<img src="${bill.receipt}" alt="Receipt" style="max-width: 100px;">` : ''}</td>
+                `;
+                historyBody.appendChild(row);
+            });
+        }
+    </script>
 </body>
 </html>
