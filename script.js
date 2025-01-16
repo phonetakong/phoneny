@@ -77,5 +77,33 @@ function generateLink() {
         alert('Link copied to clipboard: ' + link);
     }, function(err) {
         alert('Error copying link: ' + err);
+        // โหลดข้อมูลจาก Local Storage
+function loadData() {
+    const billData = JSON.parse(localStorage.getItem("billData"));
+    if (billData) {
+        document.getElementById('debtDate').value = billData.date || '';
+        document.getElementById('totalDebt').value = billData.totalDebt || '';
+        document.getElementById('paidAmount').value = billData.paidAmount || '';
+        document.getElementById('remainingDebt').value = billData.remainingDebt || '';
+        document.getElementById('receiptPreview').src = billData.receipt || '';
+    }
+}
+
+// โหลดข้อมูลจาก URL
+function loadFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById('debtDate').value = params.get('date') || '';
+    document.getElementById('totalDebt').value = params.get('totalDebt') || '';
+    document.getElementById('paidAmount').value = params.get('paidAmount') || '';
+    document.getElementById('remainingDebt').value = params.get('remainingDebt') || '';
+    const receipt = params.get('receipt');
+    document.getElementById('receiptPreview').src = receipt ? decodeURIComponent(receipt) : '';
+}
+
+// เรียกโหลดข้อมูลเมื่อหน้าเว็บเปิด
+window.onload = function () {
+    loadData();
+    loadFromURL();
+};
     });
 }
