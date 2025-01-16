@@ -3,147 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Debt Calculation with History</title>
+    <title>Debt Management - Halloween Theme</title>
     <style>
-        table {
+        body {
+            background-color: #1a1a1a;
+            color: #f0e68c;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1, h2 {
+            color: #ffa500;
+            text-align: center;
+            text-shadow: 2px 2px 5px #000;
+        }
+
+        form {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px 5px #ffa500;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        input[type="text"], input[type="date"], input[type="file"] {
             width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ffa500;
+            border-radius: 5px;
+            background-color: #444;
+            color: #fff;
+        }
+
+        button {
+            background-color: #ffa500;
+            color: #000;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #ff7518;
+        }
+
+        table {
+            width: 90%;
+            margin: 20px auto;
             border-collapse: collapse;
+            box-shadow: 0 0 10px 5px #000;
+            background-color: #333;
         }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
+
+        table th, table td {
+            border: 1px solid #ffa500;
             padding: 10px;
             text-align: center;
+            color: #fff;
         }
-        #receiptPreview {
+
+        table th {
+            background-color: #444;
+        }
+
+        .receipt-preview {
+            display: block;
             max-width: 300px;
-            margin-top: 10px;
+            margin: 20px auto;
+            border: 2px solid #ffa500;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
+    <h1>ระบบบันทึกหนี้</h1>
 
-    <h2>บันทึกหนี้</h2>
+    <form>
+        <h2>บันทึกหนี้</h2>
+        <label for="date">เดือน/วัน/ปี</label>
+        <input type="date" id="date" name="date">
 
-    <table>
-        <thead>
-            <tr>
-                <th>เดือนวันปี</th>
-                <th>หนี้ทั้งหมด</th>
-                <th>จ่ายแล้ว</th>
-                <th>หนี้ที่เหลือ</th>
-            </tr>
-        </thead>
-        <tbody id="currentBill">
-            <tr>
-                <td><input type="date" id="debtDate" /></td>
-                <td><input type="number" id="totalDebt" placeholder="Total Debt" /></td>
-                <td><input type="number" id="paidAmount" placeholder="Amount Paid" oninput="calculateRemainingDebt()" /></td>
-                <td><input type="number" id="remainingDebt" placeholder="Remaining Debt" readonly /></td>
-            </tr>
-        </tbody>
-    </table>
+        <label for="total-debt">หนี้ทั้งหมด</label>
+        <input type="text" id="total-debt" name="total-debt" placeholder="Total Debt">
 
-    <br>
+        <label for="amount-paid">จ่ายแล้ว</label>
+        <input type="text" id="amount-paid" name="amount-paid" placeholder="Amount Paid">
 
-    <label for="receiptUpload">อัปโหลดสลิป (Image):</label>
-    <input type="file" id="receiptUpload" accept="image/*" onchange="previewReceipt(event)">
-    <br>
-    <img id="receiptPreview" src="" alt="Receipt Preview" />
+        <label for="receipt">อัปโหลดสลิป</label>
+        <input type="file" id="receipt" name="receipt">
+        <img id="receipt-preview" class="receipt-preview" src="" alt="Receipt Preview">
 
-    <br>
-    <button onclick="saveData()">Save Bill</button>
-    <br><br>
+        <button type="submit">Save Bill</button>
+    </form>
 
-    <h2>ประวัติการบันทึกหนี้</h2>
-    <table id="historyTable">
-        <thead>
-            <tr>
-                <th>เดือนวันปี</th>
-                <th>หนี้ทั้งหมด</th>
-                <th>จ่ายแล้ว</th>
-                <th>หนี้ที่เหลือ</th>
-                <th>สลิป</th>
-            </tr>
-        </thead>
-        <tbody id="historyBody">
-            <!-- บิลที่บันทึกจะปรากฏที่นี่ -->
-        </tbody>
-    </table>
-
-    <script>
-        // โหลดประวัติจาก LocalStorage
-        window.onload = function() {
-            const history = JSON.parse(localStorage.getItem("billHistory")) || [];
-            renderHistory(history);
-        };
-
-        // คำนวณหนี้ที่เหลือ
-        function calculateRemainingDebt() {
-            const totalDebt = parseFloat(document.getElementById('totalDebt').value) || 0;
-            const paidAmount = parseFloat(document.getElementById('paidAmount').value) || 0;
-            const remainingDebt = totalDebt - paidAmount;
-            document.getElementById('remainingDebt').value = remainingDebt.toFixed(2);
-        }
-
-        // แสดงสลิปที่อัปโหลด
-        function previewReceipt(event) {
-            const reader = new FileReader();
-            reader.onload = function() {
-                document.getElementById('receiptPreview').src = reader.result;
-            };
-            reader.readAsDataURL(event.target.files[0]);
-        }
-
-        // บันทึกข้อมูลบิล
-        function saveData() {
-            const date = document.getElementById('debtDate').value;
-            const totalDebt = document.getElementById('totalDebt').value;
-            const paidAmount = document.getElementById('paidAmount').value;
-            const remainingDebt = document.getElementById('remainingDebt').value;
-            const receipt = document.getElementById('receiptPreview').src;
-
-            if (!date || !totalDebt || !paidAmount || !remainingDebt) {
-                alert("กรุณากรอกข้อมูลให้ครบถ้วน");
-                return;
-            }
-
-            const newBill = { date, totalDebt, paidAmount, remainingDebt, receipt };
-
-            // เก็บใน LocalStorage
-            const history = JSON.parse(localStorage.getItem("billHistory")) || [];
-            history.push(newBill);
-            localStorage.setItem("billHistory", JSON.stringify(history));
-
-            // แสดงในตาราง
-            renderHistory(history);
-
-            // รีเซ็ตฟอร์ม
-            document.getElementById('debtDate').value = "";
-            document.getElementById('totalDebt').value = "";
-            document.getElementById('paidAmount').value = "";
-            document.getElementById('remainingDebt').value = "";
-            document.getElementById('receiptPreview').src = "";
-        }
-
-        // แสดงประวัติในตาราง
-        function renderHistory(history) {
-            const historyBody = document.getElementById('historyBody');
-            historyBody.innerHTML = ""; // ล้างข้อมูลเก่า
-
-            history.forEach(bill => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${bill.date}</td>
-                    <td>${bill.totalDebt}</td>
-                    <td>${bill.paidAmount}</td>
-                    <td>${bill.remainingDebt}</td>
-                    <td>${bill.receipt ? `<img src="${bill.receipt}" alt="Receipt" style="max-width: 100px;">` : ''}</td>
-                `;
-                historyBody.appendChild(row);
-            });
-        }
-    </script>
+    <section>
+        <h2>ประวัติการบันทึกหนี้</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>เดือน/วัน/ปี</th>
+                    <th>หนี้ทั้งหมด</th>
+                    <th>จ่ายแล้ว</th>
+                    <th>หนี้ที่เหลือ</th>
+                    <th>สลิป</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>2025-01-13</td>
+                    <td>9120</td>
+                    <td>1200</td>
+                    <td>7920</td>
+                    <td><a href="#">Receipt</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
 </body>
 </html>
