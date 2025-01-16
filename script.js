@@ -15,9 +15,15 @@ window.onload = function() {
 // คำนวณยอดหนี้ที่เหลือ
 function calculateRemainingDebt() {
     const totalDebt = parseFloat(document.getElementById('totalDebt').value) || 0;
-    const paidAmount = parseFloat(document.getElementById('paidAmount').value) || 0;
-    const remainingDebt = totalDebt - paidAmount;
-    document.getElementById('remainingDebt').value = remainingDebt.toFixed(2);
+    const amountPaid = parseFloat(document.getElementById('amountPaid').value) || 0;
+
+    if (totalDebt >= amountPaid) {
+        const remainingDebt = totalDebt - amountPaid;
+        document.getElementById('remainingDebt').value = remainingDebt.toFixed(2);
+    } else {
+        alert("จำนวนเงินที่ชำระไม่ควรมากกว่ายอดหนี้ทั้งหมด!");
+        document.getElementById('amountPaid').value = ''; // Clear invalid input
+        document.getElementById('remainingDebt').value = '';
 }
 
 // แสดงภาพสลิปที่อัปโหลด
