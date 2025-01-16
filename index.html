@@ -3,132 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Debt Management - Halloween Theme</title>
+    <title>Halloween Bill Tracker</title>
     <style>
         body {
-            background-color: #1a1a1a;
-            color: #f0e68c;
+            background-color: #1c1c1c;
+            color: #ff7518;
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
         }
-
         h1, h2 {
-            color: #ffa500;
             text-align: center;
-            text-shadow: 2px 2px 5px #000;
+            color: #ffa500;
         }
-
-        form {
-            background-color: #333;
+        .container {
+            width: 80%;
+            margin: 0 auto;
             padding: 20px;
+            background-color: #2e2e2e;
+            border: 3px solid #ffa500;
             border-radius: 10px;
-            box-shadow: 0 0 10px 5px #ffa500;
-            max-width: 600px;
-            margin: 20px auto;
+            box-shadow: 0 0 10px #ff7518;
         }
-
-        form label {
-            display: block;
-            margin-bottom: 10px;
-            color: #fff;
-        }
-
-        input[type="text"], input[type="date"], input[type="file"] {
+        table {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ffa500;
-            border-radius: 5px;
-            background-color: #444;
-            color: #fff;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
-
+        table, th, td {
+            border: 1px solid #ff7518;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #ff7518;
+            color: #1c1c1c;
+        }
         button {
-            background-color: #ffa500;
-            color: #000;
-            padding: 10px 20px;
+            background-color: #ff7518;
+            color: #1c1c1c;
             border: none;
-            border-radius: 5px;
+            padding: 10px 20px;
             cursor: pointer;
             font-size: 16px;
-        }
-
-        button:hover {
-            background-color: #ff7518;
-        }
-
-        table {
-            width: 90%;
-            margin: 20px auto;
-            border-collapse: collapse;
-            box-shadow: 0 0 10px 5px #000;
-            background-color: #333;
-        }
-
-        table th, table td {
-            border: 1px solid #ffa500;
-            padding: 10px;
-            text-align: center;
-            color: #fff;
-        }
-
-        table th {
-            background-color: #444;
-        }
-
-        .receipt-preview {
-            display: block;
-            max-width: 300px;
-            margin: 20px auto;
-            border: 2px solid #ffa500;
             border-radius: 5px;
+        }
+        button:hover {
+            background-color: #ffa500;
+        }
+        input[type="text"], input[type="date"] {
+            padding: 10px;
+            border: 1px solid #ff7518;
+            border-radius: 5px;
+            width: calc(100% - 22px);
+        }
+        input[type="file"] {
+            color: #ff7518;
         }
     </style>
 </head>
 <body>
-    <h1>ระบบบันทึกหนี้</h1>
-
-    <form>
+    <h1>Halloween Bill Tracker</h1>
+    <div class="container">
         <h2>บันทึกหนี้</h2>
-        <label for="date">เดือน/วัน/ปี</label>
-        <input type="date" id="date" name="date">
+        <form id="billForm">
+            <table>
+                <tr>
+                    <th>เดือน/วันที่/ปี</th>
+                    <th>หนี้ทั้งหมด</th>
+                    <th>จ่ายแล้ว</th>
+                    <th>หนี้ที่เหลือ</th>
+                </tr>
+                <tr>
+                    <td><input type="date" id="billDate" required></td>
+                    <td><input type="text" id="totalDebt" placeholder="Total Debt" required></td>
+                    <td><input type="text" id="amountPaid" placeholder="Amount Paid" required></td>
+                    <td><input type="text" id="remainingDebt" placeholder="Remaining Debt" readonly></td>
+                </tr>
+            </table>
+            <p>
+                <label for="billReceipt">อัปโหลดสลิป (Image):</label>
+                <input type="file" id="billReceipt" accept="image/*">
+            </p>
+            <button type="button" onclick="saveBill()">Save Bill</button>
+        </form>
 
-        <label for="total-debt">หนี้ทั้งหมด</label>
-        <input type="text" id="total-debt" name="total-debt" placeholder="Total Debt">
-
-        <label for="amount-paid">จ่ายแล้ว</label>
-        <input type="text" id="amount-paid" name="amount-paid" placeholder="Amount Paid">
-
-        <label for="receipt">อัปโหลดสลิป</label>
-        <input type="file" id="receipt" name="receipt">
-        <img id="receipt-preview" class="receipt-preview" src="" alt="Receipt Preview">
-
-        <button type="submit">Save Bill</button>
-    </form>
-
-    <section>
         <h2>ประวัติการบันทึกหนี้</h2>
-        <table>
+        <table id="billTable">
             <thead>
                 <tr>
-                    <th>เดือน/วัน/ปี</th>
+                    <th>เดือน/วันที่/ปี</th>
                     <th>หนี้ทั้งหมด</th>
                     <th>จ่ายแล้ว</th>
                     <th>หนี้ที่เหลือ</th>
                     <th>สลิป</th>
+                    <th>การจัดการ</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>2025-01-13</td>
-                    <td>9120</td>
-                    <td>1200</td>
-                    <td>7920</td>
-                    <td><a href="#">Receipt</a></td>
-                </tr>
+                <!-- บิลจะถูกเพิ่มที่นี่ -->
             </tbody>
         </table>
-    </section>
+    </div>
+
+    <script>
+        function saveBill() {
+            const billDate = document.getElementById('billDate').value;
+            const totalDebt = parseFloat(document.getElementById('totalDebt').value);
+            const amountPaid = parseFloat(document.getElementById('amountPaid').value);
+            const billReceipt = document.getElementById('billReceipt').files[0];
+
+            if (!billDate || isNaN(totalDebt) || isNaN(amountPaid)) {
+                alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+                return;
+            }
+
+            const remainingDebt = totalDebt - amountPaid;
+            document.getElementById('remainingDebt').value = remainingDebt.toFixed(2);
+
+            const table = document.getElementById('billTable').querySelector('tbody');
+            const row = document.createElement('tr');
+
+            const receiptLink = billReceipt ? URL.createObjectURL(billReceipt) : '#';
+            const receiptText = billReceipt ? 'View' : 'No Receipt';
+
+            row.innerHTML = `
+                <td>${billDate}</td>
+                <td>${totalDebt.toFixed(2)}</td>
+                <td>${amountPaid.toFixed(2)}</td>
+                <td>${remainingDebt.toFixed(2)}</td>
+                <td><a href="${receiptLink}" target="_blank">${receiptText}</a></td>
+                <td><button onclick="deleteBill(this)">ลบ</button></td>
+            `;
+
+            table.appendChild(row);
+
+            // Reset form
+            document.getElementById('billForm').reset();
+            document.getElementById('remainingDebt').value = '';
+        }
+
+        function deleteBill(button) {
+            const row = button.parentElement.parentElement;
+            row.remove();
+        }
+    </script>
 </body>
 </html>
