@@ -4,12 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Halloween Bill Tracker</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: #1c1c1c;
+            color: #ff7518;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #ffa500;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #2e2e2e;
+            border: 3px solid #ffa500;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ff7518;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ff7518;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #ff7518;
+            color: #1c1c1c;
+        }
+        button {
+            background-color: #ff7518;
+            color: #1c1c1c;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #ffa500;
+        }
+        input[type="text"], input[type="date"] {
+            padding: 10px;
+            border: 1px solid #ff7518;
+            border-radius: 5px;
+            width: calc(100% - 22px);
+        }
+        input[type="file"] {
+            color: #ff7518;
+        }
+    </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🎃 Halloween Bill Tracker 🎃</h1>
-    </div>
+    <h1>Halloween Bill Tracker</h1>
     <div class="container">
         <h2>บันทึกหนี้</h2>
         <form id="billForm">
@@ -46,14 +102,12 @@
                     <th>การจัดการ</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="billTableBody">
                 <!-- บิลจะถูกเพิ่มที่นี่ -->
             </tbody>
         </table>
     </div>
-    <div class="footer">
-        <p>👻 Have a Spooky Halloween! 👻</p>
-    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
