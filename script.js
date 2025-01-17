@@ -1,31 +1,3 @@
-// script.js
-window.onload = function() {
-    if(localStorage.getItem("billData")) {
-        const billData = JSON.parse(localStorage.getItem("billData"));
-        document.getElementById('debtDate').value = billData.date;
-        document.getElementById('totalDebt').value = billData.totalDebt;
-        document.getElementById('paidAmount').value = billData.paidAmount;
-        document.getElementById('remainingDebt').value = billData.remainingDebt;
-        if (billData.receipt) {
-            document.getElementById('receiptPreview').src = billData.receipt;
-        }
-    }
-};
-
-// คำนวณยอดหนี้ที่เหลือ
-function calculateRemainingDebt() {
-    const totalDebt = parseFloat(document.getElementById('totalDebt').value) || 0;
-    const amountPaid = parseFloat(document.getElementById('amountPaid').value) || 0;
-
-    if (totalDebt >= amountPaid) {
-        const remainingDebt = totalDebt - amountPaid;
-        document.getElementById('remainingDebt').value = remainingDebt.toFixed(2);
-    } else {
-        alert("จำนวนเงินที่ชำระไม่ควรมากกว่ายอดหนี้ทั้งหมด!");
-        document.getElementById('amountPaid').value = ''; // Clear invalid input
-        document.getElementById('remainingDebt').value = '';
-}
-
 // แสดงภาพสลิปที่อัปโหลด
 function previewReceipt(event) {
     const reader = new FileReader();
@@ -39,71 +11,84 @@ function previewReceipt(event) {
 // ลบภาพสลิป
 function deleteReceipt() {
     document.getElementById('receiptPreview').src = "";
-    const billData = JSON.parse(localStorage.getItem("billData")) || {};
-    billData.receipt = null;
-    localStorage.setItem("billData", JSON.stringify(billData));
     alert("Receipt has been deleted.");
 }
 
-// บันทึกข้อมูลบิล
-function saveData() {
-    const billData = {
-        date: document.getElementById('debtDate').value,
-        totalDebt: document.getElementById('totalDebt').value,
-        paidAmount: document.getElementById('paidAmount').value,
-        remainingDebt: document.getElementById('remainingDebt').value,
-        receipt: document.getElementById('receiptPreview').src || null
-    };
-    localStorage.setItem("billData", JSON.stringify(billData));
-    alert("Bill data and receipt saved!");
+// คำนวณหนี้ที่เหลือ
+function calculateRemainingDebt() {
+    const totalDebt = parseFloat(document.getElementById('totalDebt').value) || 0;
+    const paidAmount = parseFloat(document.getElementById('paidAmount').value) || 0;
+
+    if (paidAmount > totalDebt) {
+        alert("Paid amount cannot exceed total debt!");
+        return;
+    }
+
+    const remainingDebt = totalDebt - paidAmount;
+    document.getElementById('remainingDebt').value = remainingDebt.toFixed(2);
 }
 
-// สร้างลิงค์สำหรับแชร์
-function generateLink() {
+// บันทึกข้อมูลบิล
+function saveBill() {
     const billData = {
         date: document.getElementById('debtDate').value,
         totalDebt: document.getElementById('totalDebt').value,
         paidAmount: document.getElementById('paidAmount').value,
         remainingDebt: document.getElementById('remainingDebt').value,
-        receipt: document.getElementById('receiptPreview').src || null
+        receipt: document.getElementById('receiptPreview').src || ""
     };
 
-    const receiptParam = billData.receipt ? encodeURIComponent(billData.receipt) : '';
+    // ดึงข้อมูลเก่าใน LocalStorage
+    const existingBills = JSON.parse(localStorage.getItem("bills")) || [];
+    existingBills.push(billData);
 
-    const link = window.location.href.split('?')[0] + 
-                `?date=${billData.date}&totalDebt=${billData.totalDebt}&paidAmount=${billData.paidAmount}&remainingDebt=${billData.remainingDebt}&receipt=${receiptParam}`;
-    
-    navigator.clipboard.writeText(link).then(function() {
-        alert('Link copied to clipboard: ' + link);
-    }, function(err) {
-        alert('Error copying link: ' + err);
-        // โหลดข้อมูลจาก Local Storage
-function loadData() {
-    const billData = JSON.parse(localStorage.getItem("billData"));
-    if (billData) {
-        document.getElementById('debtDate').value = billData.date || '';
-        document.getElementById('totalDebt').value = billData.totalDebt || '';
-        document.getElementById('paidAmount').value = billData.paidAmount || '';
-        document.getElementById('remainingDebt').value = billData.remainingDebt || '';
-        document.getElementById('receiptPreview').src = billData.receipt || '';
+    // บันทึกกลับไปที่ LocalStorage
+    localStorage.setItem("bills", JSON.stringify(existingBills));
+
+    alert("Bill saved successfully!");
+    loadBills(); // โหลดข้อมูลใหม่หลังบันทึก
+}
+
+// โหลดข้อมูลบิลจาก LocalStorage
+function loadBills() {
+    const billTable = document.getElementById('billTableBody');
+    billTable.innerHTML = ""; // ล้างข้อมูลเดิมก่อน
+
+    const bills = JSON.parse(localStorage.getItem("bills")) || [];
+
+    bills.forEach((bill, index) => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>${bill.date}</td>
+            <td>${bill.totalDebt}</td>
+            <td>${bill.paidAmount}</td>
+            <td>${bill.remainingDebt}</td>
+            <td>
+                <img src="${bill.receipt}" alt="Receipt" style="width: 100px; height: auto;" />
+            </td>
+            <td>
+                <button onclick="deleteBill(${index})">Delete</button>
+            </td>
+        `;
+
+        billTable.appendChild(row);
+    });
+}
+
+// ลบข้อมูลบิล
+function deleteBill(index) {
+    const bills = JSON.parse(localStorage.getItem("bills")) || [];
+
+    if (index >= 0 && index < bills.length) {
+        bills.splice(index, 1); // ลบข้อมูลตามตำแหน่ง
+        localStorage.setItem("bills", JSON.stringify(bills)); // บันทึกกลับไป
+        alert("Bill deleted successfully!");
+        loadBills(); // โหลดข้อมูลใหม่หลังลบ
     }
 }
 
-// โหลดข้อมูลจาก URL
-function loadFromURL() {
-    const params = new URLSearchParams(window.location.search);
-    document.getElementById('debtDate').value = params.get('date') || '';
-    document.getElementById('totalDebt').value = params.get('totalDebt') || '';
-    document.getElementById('paidAmount').value = params.get('paidAmount') || '';
-    document.getElementById('remainingDebt').value = params.get('remainingDebt') || '';
-    const receipt = params.get('receipt');
-    document.getElementById('receiptPreview').src = receipt ? decodeURIComponent(receipt) : '';
-}
-
-// เรียกโหลดข้อมูลเมื่อหน้าเว็บเปิด
-window.onload = function () {
-    loadData();
-    loadFromURL();
+// โหลดข้อมูลเมื่อหน้าเว็บโหลด
+window.onload = function() {
+    loadBills();
 };
-    });
-}
