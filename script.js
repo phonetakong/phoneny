@@ -40,7 +40,7 @@ function saveBill() {
 
     // ดึงข้อมูลเก่าใน LocalStorage
     const existingBills = JSON.parse(localStorage.getItem("bills")) || [];
-    existingBills.push(billData);
+    existingBills.push(billData); // เพิ่มบิลใหม่เข้าไปในข้อมูลเก่า
 
     // บันทึกกลับไปที่ LocalStorage
     localStorage.setItem("bills", JSON.stringify(existingBills));
@@ -52,9 +52,9 @@ function saveBill() {
 // โหลดข้อมูลบิลจาก LocalStorage
 function loadBills() {
     const billTable = document.getElementById('billTableBody');
-    billTable.innerHTML = ""; // ล้างข้อมูลเดิมก่อน
+    billTable.innerHTML = ""; // ล้างข้อมูลเดิมในตาราง
 
-    const bills = JSON.parse(localStorage.getItem("bills")) || [];
+    const bills = JSON.parse(localStorage.getItem("bills")) || []; // ดึงข้อมูลบิลจาก LocalStorage
 
     bills.forEach((bill, index) => {
         const row = document.createElement("tr");
@@ -81,8 +81,8 @@ function deleteBill(index) {
     const bills = JSON.parse(localStorage.getItem("bills")) || [];
 
     if (index >= 0 && index < bills.length) {
-        bills.splice(index, 1); // ลบข้อมูลตามตำแหน่ง
-        localStorage.setItem("bills", JSON.stringify(bills)); // บันทึกกลับไป
+        bills.splice(index, 1); // ลบข้อมูลตามตำแหน่งที่เลือก
+        localStorage.setItem("bills", JSON.stringify(bills)); // บันทึกข้อมูลใหม่กลับไป
         alert("Bill deleted successfully!");
         loadBills(); // โหลดข้อมูลใหม่หลังลบ
     }
@@ -90,5 +90,5 @@ function deleteBill(index) {
 
 // โหลดข้อมูลเมื่อหน้าเว็บโหลด
 window.onload = function() {
-    loadBills();
+    loadBills(); // โหลดข้อมูลเมื่อเปิดหน้าเว็บ
 };
