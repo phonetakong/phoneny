@@ -102,53 +102,12 @@
                     <th>การจัดการ</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="billTableBody">
                 <!-- บิลจะถูกเพิ่มที่นี่ -->
             </tbody>
         </table>
     </div>
 
-    <script>
-        function saveBill() {
-            const billDate = document.getElementById('billDate').value;
-            const totalDebt = parseFloat(document.getElementById('totalDebt').value);
-            const amountPaid = parseFloat(document.getElementById('amountPaid').value);
-            const billReceipt = document.getElementById('billReceipt').files[0];
-
-            if (!billDate || isNaN(totalDebt) || isNaN(amountPaid)) {
-                alert('กรุณากรอกข้อมูลให้ครบถ้วน');
-                return;
-            }
-
-            const remainingDebt = totalDebt - amountPaid;
-            document.getElementById('remainingDebt').value = remainingDebt.toFixed(2);
-
-            const table = document.getElementById('billTable').querySelector('tbody');
-            const row = document.createElement('tr');
-
-            const receiptLink = billReceipt ? URL.createObjectURL(billReceipt) : '#';
-            const receiptText = billReceipt ? 'View' : 'No Receipt';
-
-            row.innerHTML = `
-                <td>${billDate}</td>
-                <td>${totalDebt.toFixed(2)}</td>
-                <td>${amountPaid.toFixed(2)}</td>
-                <td>${remainingDebt.toFixed(2)}</td>
-                <td><a href="${receiptLink}" target="_blank">${receiptText}</a></td>
-                <td><button onclick="deleteBill(this)">ลบ</button></td>
-            `;
-
-            table.appendChild(row);
-
-            // Reset form
-            document.getElementById('billForm').reset();
-            document.getElementById('remainingDebt').value = '';
-        }
-
-        function deleteBill(button) {
-            const row = button.parentElement.parentElement;
-            row.remove();
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
