@@ -1,16 +1,90 @@
-/* style.css */
+body {
+    background-color: #1c1c1c;
+    color: #ff7518;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.header, .footer {
+    text-align: center;
+    background-color: #2e2e2e;
+    padding: 20px 0;
+    border-bottom: 3px solid #ffa500;
+}
+
+h1, h2 {
+    color: #ffa500;
+}
+
+.container {
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #2e2e2e;
+    border: 3px solid #ffa500;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #ff7518;
+    position: relative;
+}
+
+.container::before {
+    content: '🎃';
+    font-size: 50px;
+    position: absolute;
+    top: -30px;
+    left: 10px;
+}
+
+.container::after {
+    content: '🎃';
+    font-size: 50px;
+    position: absolute;
+    top: -30px;
+    right: 10px;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 20px;
 }
+
 table, th, td {
-    border: 1px solid black;
+    border: 1px solid #ff7518;
 }
+
 th, td {
     padding: 10px;
     text-align: center;
 }
-#receiptPreview {
-    max-width: 300px;
-    margin-top: 10px;
+
+th {
+    background-color: #ff7518;
+    color: #1c1c1c;
+}
+
+button {
+    background-color: #ff7518;
+    color: #1c1c1c;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #ffa500;
+}
+
+input[type="text"], input[type="date"] {
+    padding: 10px;
+    border: 1px solid #ff7518;
+    border-radius: 5px;
+    width: calc(100% - 22px);
+}
+
+input[type="file"] {
+    color: #ff7518;
 }
